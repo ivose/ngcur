@@ -1,0 +1,20 @@
+<section id="tasks">
+  <header>
+    <h2>{{name}}'s Tasks</h2>
+    <menu>
+      <button>Add task</button>
+    </menu>
+  </header>
+  <ul>
+    <!--
+    @for(task of selectedUserTasks; track task.id) {
+      <li>
+        <app-task [task]="task" (complete)="onCompleteTask($event)" />
+      </li>
+    }
+    -->
+    <li *ngFor="let task of selectedUserTasks; trackBy: trackByTaskId">
+      <app-task [task]="task" (compete)="onCompleteTask($event)"></app-task>
+    </li>
+  </ul>
+</section>

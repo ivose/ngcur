@@ -40,3 +40,6 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+file_tree_viewer.py
+file_tree_viewer_result.txt

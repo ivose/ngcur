@@ -8,8 +8,8 @@
 [style]="{
   'font-size': '20px',
   fontSize: '20px',
-  'background-color': currentStatus === 'offline' ? 'red' : 'green',
-  'color': currentStatus === 'offline' ? 'white' : 'black'
+  'background-color': currentStatus() === 'offline' ? 'red' : 'green',
+  'color': currentStatus() === 'offline' ? 'white' : 'black'
 }"
 [style.fontSize]="'30px'">
   @if (currentStatus() === 'online') {

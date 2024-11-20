@@ -16,7 +16,9 @@ export class NewTicketComponent implements OnInit, AfterViewInit{
   //private form = viewChild<ElementRef<HTMLFormElement>>('form');
   //private form = viewChild.required<ElementRef<HTMLFormElement>>('form');
   //@Output() add = new EventEmitter
-  add = output<{title: String, description: String}>();
+  add = output<{title: string, text: string}>();
+  enteredTitle = '';
+  enteredText = '';
 
   ngOnInit(): void {
     console.log('ONINIT');
@@ -28,14 +30,16 @@ export class NewTicketComponent implements OnInit, AfterViewInit{
   }
 
 
-  onSubmit(titleElement: String, descriptionElement: String) {
-    const title = titleElement;
-    const description = descriptionElement;
+  onSubmit() {
+    const title = this.enteredTitle;
+    const description = this.enteredText;
     console.log('Submitted', title, description);
     this.form?.nativeElement.remove();
     //this.form?.nativeElement.reset();//videos olnud reset ei toimi
     //this.form()?.nativeElement.reset();
     //this.form().nativeElement.reset();//deklaratsioonis 'required'
-    this.add.emit({title, description});
+    this.add.emit({title, text: description});
+    this.enteredTitle = '';
+    this.enteredText = '';
   }
 }

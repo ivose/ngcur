@@ -9,5 +9,21 @@
     <p>only admin should see this</p>
   } -->
 
-  <p *ngIf="isAdmin()">only admin should see this</p>
+  <!-- <p *ngIf="isAdmin()">only admin should see this</p> -->
+
+  <!-- <p *appAuth="'admin'">only admin should see this</p> -->
+  <!-- <ng-template appAuth="admin">
+    <p>only admin should see this</p>
+  </ng-template> -->
+  <p *appAuth="'admin'" appLog class="protected-container admin">
+    only admin should see this
+  </p>
+  <p *appAuth="'user'" appLog class="protected-container authrized">
+    regular user can see this
+  </p>
+  <p *appAuth="'guest'" appLog class="protected-container unauthorized">
+    unauthorized user can see this
+  </p>
+  
+
 </main>

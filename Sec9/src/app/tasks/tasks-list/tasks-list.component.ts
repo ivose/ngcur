@@ -1,7 +1,7 @@
-import { TasksService } from '../tasks.service';
 import { Component, computed, inject, signal } from '@angular/core';
-
 import { TaskItemComponent } from './task-item/task-item.component';
+import { TasksServiceToken } from '../../../main';
+import { TASK_STATUS_OPTINS, TaskStatusOptions, taskStatusOptionsProvider } from '../task.model';
 
 @Component({
   selector: 'app-tasks-list',
@@ -9,20 +9,24 @@ import { TaskItemComponent } from './task-item/task-item.component';
   templateUrl: './tasks-list.component.html',
   styleUrl: './tasks-list.component.css',
   imports: [TaskItemComponent],
+  providers: [taskStatusOptionsProvider],
 })
 export class TasksListComponent {
-  private tasksService = inject(TasksService);
+  private tasksService = inject(TasksServiceToken);
   selectedFilter = signal<string>('all');
+  taskStatusOptions = inject(TASK_STATUS_OPTINS);
   tasks = computed(() => {
-    switch(this.selectedFilter()) {
+    const filter = this.selectedFilter();
+    const allTasks = this.tasksService.allTasks();
+    switch (filter) {
       case 'open':
-        return this.tasksService.allTasks().filter((task) => task.status === 'OPEN');
+        return allTasks.filter((task) => task.status === 'OPEN');
       case 'in-progress':
-        return this.tasksService.allTasks().filter((task) => task.status === 'IN_PROGRESS');
+        return allTasks.filter((task) => task.status === 'IN_PROGRESS');
       case 'done':
-        return this.tasksService.allTasks().filter((task) => task.status === 'DONE');
+        return allTasks.filter((task) => task.status === 'DONE');
       default:
-        return this.tasksService.allTasks();
+        return allTasks;
     }
   });
 

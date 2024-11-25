@@ -13,7 +13,7 @@ import { MessagesService } from '../service.service';
 export class NewMessageComponent {
   //add = output<string>();
   private messageService = inject(MessagesService);
-  enteredText = signal('');
+  enteredText = '';
 
   get debugOutput() {
     console.log('[NewMessage] "debugOutput" binding re-evaluated.');
@@ -21,7 +21,7 @@ export class NewMessageComponent {
   }
 
   onSubmit() {
-    this.messageService.addMessage(this.enteredText());
-    this.enteredText.set('');//kaob vajadus messages.component.html'is (add)="onAddMessage($event)" järele
+    this.messageService.addMessage(this.enteredText);
+    this.enteredText = '';
   }
 }

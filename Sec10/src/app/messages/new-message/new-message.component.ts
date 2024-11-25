@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MessagesService } from '../service.service';
 
 @Component({
   selector: 'app-new-message',
@@ -10,7 +11,8 @@ import { FormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewMessageComponent {
-  add = output<string>();
+  //add = output<string>();
+  private messageService = inject(MessagesService);
   enteredText = signal('');
 
   get debugOutput() {
@@ -19,7 +21,7 @@ export class NewMessageComponent {
   }
 
   onSubmit() {
-    this.add.emit(this.enteredText());
-    this.enteredText.set('');
+    this.messageService.addMessage(this.enteredText());
+    this.enteredText.set('');//kaob vajadus messages.component.html'is (add)="onAddMessage($event)" järele
   }
 }

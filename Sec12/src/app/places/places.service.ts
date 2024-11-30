@@ -1,3 +1,4 @@
+import { ErrorService } from './../shared/error.service';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 
@@ -8,6 +9,7 @@ import { catchError, map, tap, throwError } from 'rxjs';
   providedIn: 'root',
 })
 export class PlacesService {
+  private ErrorService = inject(ErrorService);
   private httpClient = inject(HttpClient);
   private userPlaces = signal<Place[]>([]);
 
@@ -18,20 +20,28 @@ export class PlacesService {
       'http://localhost:3000/places',
       "Something went wrong fetching available places. Please try again later."
     )
+    // .pipe(tap({
+    //   next: (userPlaces) => this.userPlaces.set(userPlaces)
+    // }))
   }
 
   loadUserPlaces() {
+    const prevPlaces = this.userPlaces();
     return this.fetchData(
       'http://localhost:3000/user-places',
       "Something went wrong fetching your favourite places. Please try again later."
-    ).pipe(tap({
-      next: (userPlaces) => this.userPlaces.set(userPlaces)
+    ).pipe(
+      tap(places => this.userPlaces.set(places)),
+      catchError(() => {
+      this.userPlaces.set(prevPlaces);
+      this.ErrorService.showError("Failed to load user places.");
+      return throwError(() => new Error("Failed to load user places."))
     }))
   }
 
   addPlaceToUserPlaces(place: Place) {
-    //this.userPlaces.update((prevPlaces) => [...prevPlaces, placeId]);
     const prevPlaces = this.userPlaces();
+    //this.userPlaces.update((prevPlaces) => [...prevPlaces, placeId]);
     if(!prevPlaces.some((p) => p.id === place.id)) {
       this.userPlaces.set([...prevPlaces, place]);
     }
@@ -44,7 +54,16 @@ export class PlacesService {
     }))
   }
 
-  removeUserPlace(place: Place) { }
+  removeUserPlace(place: Place) {
+    const prevPlaces = this.userPlaces();
+    this.userPlaces.set(prevPlaces.filter((p) => p.id !== place.id));
+    return this.httpClient.delete('http://localhost:3000/user-places/'+place.id)
+    .pipe(catchError(error => {
+      this.userPlaces.set(prevPlaces);
+      this.ErrorService.showError("Failed to remove selected place.");
+      return throwError(() => new Error("Failed to remove selected place."))
+    }));
+   }
 
   private fetchData(url: string, errorMessage: string) {
     return this.httpClient.get<{ places: Place[] }>(url).pipe(

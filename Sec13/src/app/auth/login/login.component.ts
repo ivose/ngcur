@@ -15,6 +15,8 @@ function emailIsUnique(control: AbstractControl) {
   }
   return of({ notUnique: true });
 }
+const savedForm = window.localStorage.getItem('saved-login-form');
+const loadedForm = savedForm ? JSON.parse(savedForm) : { email: '' };
 
 @Component({
   selector: 'app-login',
@@ -26,7 +28,7 @@ function emailIsUnique(control: AbstractControl) {
 export class LoginComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   form = new FormGroup({
-    email: new FormControl('', {
+    email: new FormControl(loadedForm.email, {
       validators: [Validators.email, Validators.required],
       asyncValidators: [emailIsUnique],
     }),
@@ -64,11 +66,11 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const savedForm = window.localStorage.getItem('saved-login-form');
-    if (savedForm) {
-      const { email } = JSON.parse(savedForm);
-      this.form.patchValue({ email });
-    }
+    // const savedForm = window.localStorage.getItem('saved-login-form');
+    // if (savedForm) {
+    //   const { email } = JSON.parse(savedForm);
+    //   this.form.patchValue({ email });
+    // }
     const subscription = this.form.valueChanges.pipe(debounceTime(500)).subscribe({
       next: (value) => {
         window.localStorage.setItem(

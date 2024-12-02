@@ -9,36 +9,26 @@ import { ActivatedRoute, ActivatedRouteSnapshot, ResolveFn, RouterLink, RouterOu
   templateUrl: './user-tasks.component.html',
   styleUrl: './user-tasks.component.css',
 })
-export class UserTasksComponent {
-  //userId = input.required<string>();
-  message = input.required<string>();//app.routes kohal data: {message: '..'}
+export class UserTasksComponent implements OnInit {
+  message = input.required<string>();
   userName = input.required<string>();
-
-  /*private usersService = inject(UsersService);
   private activatedRoute = inject(ActivatedRoute);
-  private destroyRef = inject(DestroyRef);
-  userName: string = '';
 
-  // userName = computed(()=> this.usersService.users.find(u => u.id = this.userId())?.name);
-
-  ngOnInit(): void {
-    // console.log(this.activatedRoute);
-    // console.log(this.activatedRoute.snapshot);
-    // console.log(this.activatedRoute.snapshot.paramMap.get('userId'));
-    console.log('Input data', this.message());
-    const subscription = this.activatedRoute.paramMap.subscribe({
-      next: (paramMap) => {
-        this.userName =
-          this.usersService.users.find(u => u.id === paramMap.get('userId'))?.name || '';
-      },
+  ngOnInit():void {
+    this.activatedRoute.data.subscribe({
+      next: (data) => {
+        console.log(data);
+      }
     });
-    this.destroyRef.onDestroy(() => subscription.unsubscribe());
-  }*/
-
+  }
 }
 
 export const resolveUserName: ResolveFn<string> = (ar: ActivatedRouteSnapshot, rs: RouterStateSnapshot) => {
   const usersService = inject(UsersService);
   const userName = usersService.users.find(u => u.id === ar.paramMap.get('userId'))?.name || '';
   return userName;
+}
+
+export const resolveTitle: ResolveFn<string> = (ar: ActivatedRouteSnapshot, rs: RouterStateSnapshot) => {
+  return resolveUserName(ar, rs) + '\'s tasks';
 }

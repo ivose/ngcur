@@ -30,7 +30,7 @@ export const routes: Routes = [
   {
     path: 'users/:userId', // <your-domain>/users/<uid>
     component: UserTasksComponent,
-    children: userRoutes,
+    loadChildren: () => import('./users/users.routes').then(m => m.routes),
     canMatch: [dummyCanMatch],
     data: {
       message: 'Hello!',

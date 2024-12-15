@@ -1,15 +1,24 @@
 <div class="container">
   <div class="row">
     <div class="col-xs-12">
-      <button
-        class="btn btn-primary"
-        (click)="onlyOdd = !onlyOdd">Only show odd numbers</button>
-      <br><br>
+      <button class="btn btn-primary" (click)="onlyOdd = !onlyOdd">
+        Only show odd numbers
+      </button>
+      <br /><br />
       <ul class="list-group">
         <li
-          class="list-group-item">
+          class="list-group-item"
+          *ngFor="let number of filteredNumbers"
+          [ngClass]="{ odd: number % 2 !== 0 }"
+          [ngStyle]="{
+            'background-color': number % 2 !== 0 ? 'yellow' : 'green'
+          }"
+        >
+          {{ number }}
         </li>
       </ul>
+      <p appBasicHighlight>Style me basig directive</p>
+      <p appBetterHighlight>Style me basig directive</p>
       <ng-template [ngIf]="onlyOdd">
         <p>Only odd</p>
       </ng-template>

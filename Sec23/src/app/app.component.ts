@@ -8,4 +8,8 @@ import { Component } from '@angular/core';
 export class AppComponent {
   numbers = [1, 2, 3, 4, 5];
   onlyOdd = false;
+
+  get filteredNumbers() {
+    return this.onlyOdd ? this.numbers.filter(num => num % 2 !== 0) : this.numbers.filter(num => num % 2 === 0);
+  }
 }

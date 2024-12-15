@@ -18,7 +18,8 @@
         </li>
       </ul>
       <p appBasicHighlight>Style me basig directive</p>
-      <p appBetterHighlight>Style me basig directive</p>
+      <!-- <p appBetterHighlight [defaultColor]="'yellow'" [highlightColor]="'red'">Style me basig directive</p> -->
+      <p [appBetterHighlight]="'red'" [defaultColor]="'yellow'">Style me basig directive</p>
       <ng-template [ngIf]="onlyOdd">
         <p>Only odd</p>
       </ng-template>

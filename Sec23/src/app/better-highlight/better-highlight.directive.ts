@@ -1,10 +1,18 @@
-import { Directive, ElementRef, HostBinding, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
+import {
+  Directive,
+  Renderer2,
+  OnInit,
+  ElementRef,
+  HostListener,
+  HostBinding,
+  Input
+} from '@angular/core';
 
 @Directive({
   selector: '[appBetterHighlight]'
 })
 export class BetterHighlightDirective implements OnInit {
-  @Input() defaultColor: string = 'lightblue';
+  @Input() defaultColor: string = 'transparent';
   @Input('appBetterHighlight') highlightColor: string = 'blue';
   @HostBinding('style.backgroundColor') backgroundColor: string;
 

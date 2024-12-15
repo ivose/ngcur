@@ -6,10 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  numbers = [1, 2, 3, 4, 5];
+  // numbers = [1, 2, 3, 4, 5];
+  oddNumbers = [1, 3, 5];
+  evenNumbers = [2, 4];
   onlyOdd = false;
-
-  get filteredNumbers() {
-    return this.onlyOdd ? this.numbers.filter(num => num % 2 !== 0) : this.numbers.filter(num => num % 2 === 0);
-  }
+  value = 5;
 }

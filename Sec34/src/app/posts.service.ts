@@ -1,8 +1,8 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpEventType, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Post } from './post.model';
 import { Observable, Subject, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,16 +13,20 @@ export class PostsService {
 
   constructor(private http: HttpClient) { }
 
-  createAndStorePost(title: string, content: string): Observable<{ name: string }> {
+  createAndStorePost(title: string, content: string) {
     const post: Post = { title, content };
-    return this.http.post<{ name: string }>(
+    this.http.post<{ name: string }>(
       this.apiUrl,
-      post
-    ).pipe(
-      catchError(errorRes => {
-        this.error.next(errorRes.message);
-        return throwError(() => errorRes);
-      })
+      post,{
+        observe: 'response'
+      }
+    ).subscribe(
+      responseData => {
+        console.log(responseData);
+      },
+      error => {
+        this.error.next(error.message);
+      }
     );
   }
 
@@ -33,10 +37,11 @@ export class PostsService {
     return this.http
       .get<{ [key: string]: Post }>(this.apiUrl, {
         headers: new HttpHeaders({
-          'Custom-Header': 'Hello!'
+          'Custom-Header': 'Hello!
         }),
         //params: new HttpParams().set('print', 'pretty'),//et ei lähe tarvis urli lõppu &print=pretty
-        params
+        params,
+        responseType: 'json',
       })
       .pipe(
         map(responseData => {
@@ -55,7 +60,18 @@ export class PostsService {
   }
 
   deletePosts() {
-    return this.http.delete(this.apiUrl);
+    return this.http.delete(
+      this.apiUrl,
+       {observe: 'events', responseType: 'text'}
+      ).pipe(tap(event => {
+      console.log(event);
+      if(event.type === HttpEventType.Sent) {
+        //..
+      }
+      if(event.type === HttpEventType.Response) {
+        console.log(event.body);
+      }
+    }));
   }
 
 }

@@ -13,31 +13,25 @@ export class PostsService {
 
   constructor(private http: HttpClient) { }
 
-  createAndStorePost(title: string, content: string) {
+  createAndStorePost(title: string, content: string): Observable<any> {
     const post: Post = { title, content };
-    this.http.post<{ name: string }>(
+    return this.http.post<{ name: string }>(
       this.apiUrl,
-      post,{
+      post,
+      {
         observe: 'response'
-      }
-    ).subscribe(
-      responseData => {
-        console.log(responseData);
-      },
-      error => {
-        this.error.next(error.message);
       }
     );
   }
 
   fetchPosts(): Observable<Post[]> {
-    const params = new HttpParams();
-    params.append('print', 'pretty');
-    params.append('custom', 'key');
+    let params = new HttpParams()
+      .set('print', 'pretty')
+      .set('custom', 'key');
     return this.http
       .get<{ [key: string]: Post }>(this.apiUrl, {
         headers: new HttpHeaders({
-          'Custom-Header': 'Hello!
+          'Custom-Header': 'Hello!'
         }),
         //params: new HttpParams().set('print', 'pretty'),//et ei lähe tarvis urli lõppu &print=pretty
         params,
@@ -62,13 +56,13 @@ export class PostsService {
   deletePosts() {
     return this.http.delete(
       this.apiUrl,
-       {observe: 'events', responseType: 'text'}
-      ).pipe(tap(event => {
+      { observe: 'events', responseType: 'text' }
+    ).pipe(tap(event => {
       console.log(event);
-      if(event.type === HttpEventType.Sent) {
+      if (event.type === HttpEventType.Sent) {
         //..
       }
-      if(event.type === HttpEventType.Response) {
+      if (event.type === HttpEventType.Response) {
         console.log(event.body);
       }
     }));

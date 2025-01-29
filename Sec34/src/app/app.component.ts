@@ -1,33 +1,44 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+// app.component.ts
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Post } from './post.model';
-
+import { PostsService } from './posts.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   loadedPosts: Post[] = [];
-  isfetcgubg = false;
+  isFetching = false;
+  error = null;
+  private errorSub : Subscription;
 
-  constructor(private http: HttpClient) { }
+  constructor(private postsService: PostsService) { }
 
   ngOnInit() {
+    this.errorSub = this.postsService.error.subscribe(errorMessage => {
+      this.error = errorMessage;
+    });
     this.fetchPosts();
   }
 
+  ngOnDestroy(): void {
+    if (this.errorSub) {
+      this.errorSub.unsubscribe();
+    }
+  }
+
   onCreatePost(postData: Post) {
-    this.http
-      .post<{ name: string }>(
-        'http://localhost:3000/posts.json',
-        postData
-      )
-      .subscribe(responseData => {
-        console.log(responseData);
-        this.fetchPosts(); // Refresh posts after creating new one
+    this.postsService.createAndStorePost(postData.title, postData.content)
+      .subscribe({
+        next: () => {
+          this.fetchPosts();
+        },
+        error: error => {
+          this.error = error.message;
+        }
       });
   }
 
@@ -36,33 +47,31 @@ export class AppComponent implements OnInit {
   }
 
   onClearPosts() {
-    this.http
-      .delete('http://localhost:3000/posts.json')
-      .subscribe(() => {
+    this.postsService.deletePosts().subscribe({
+      next: () => {
         this.loadedPosts = [];
-      });
+      },
+      error: error => {
+        this.error = error.message;
+      }
+    });
   }
 
   private fetchPosts() {
-    this.isfetcgubg = true;
-    this.http
-      .get<{ [key: string]: Post }>(
-        'http://localhost:3000/posts.json'
-      )
-      .pipe(
-        map((responseData: { [key: string]: Post }) => {
-          const postsArray: Post[] = [];
-          for (const key in responseData) {
-            if (responseData.hasOwnProperty(key)) {
-              postsArray.push({ ...responseData[key], id: key });
-            }
-          }
-          return postsArray;
-        })
-      )
-      .subscribe(posts => {
+    this.isFetching = true;
+    this.postsService.fetchPosts().subscribe({
+      next: posts => {
+        this.isFetching = false;
         this.loadedPosts = posts;
-        this.isfetcgubg = false;
-      });
+      },
+      error: error => {
+        this.isFetching = false;
+        this.error = error.message;
+      }
+    });
+  }
+
+  onHandleError() {
+    this.error = null;
   }
 }

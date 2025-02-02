@@ -1,20 +1,28 @@
 
-import { Component } from '@angular/core';
+import { Component, ComponentFactoryResolver, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthResponseData, AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceHolderDirective } from '../shared/placeholder/placeholder.directive';
+import { hostViewClassName } from '@angular/compiler';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html'
 })
-export class AuthComponent {
+export class AuthComponent implements OnDestroy {
   isLoginMode = true;
   isLoading = false;
   error: string = null;
+  @ViewChild(PlaceHolderDirective) alertHost: PlaceHolderDirective;
+  private closeSub: Subscription;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private componentFactoryResolver: ComponentFactoryResolver) { }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -37,10 +45,11 @@ export class AuthComponent {
       this.isLoading = false;
       this.router.navigate(['/recipes']);
     }, errorMessage => {
-        console.log(errorMessage);
-        this.isLoading = false;
-        this.error = errorMessage;
-      }
+      console.log(errorMessage);
+      this.isLoading = false;
+      this.showErrorAlert(errorMessage);
+      this.error = errorMessage;
+    }
       // errorResp => {
       //   switch(errorResp.error.error.message) {
       //     case 'EMAIL_EXISTS':
@@ -51,5 +60,30 @@ export class AuthComponent {
       // }
     )
     form.reset();
+  }
+
+  onHandleError() {
+    this.error = null;
+  }
+
+  private showErrorAlert(message: string) {
+    // const alertCom = new AlertComponent();
+    const alertComponentFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+    const viewContainerRef = this.alertHost.viewContainerRef;
+    viewContainerRef.clear();
+    const componentRef = viewContainerRef.createComponent(alertComponentFactory);
+    componentRef.instance.message = message;
+    this.closeSub = componentRef.instance.close.subscribe(()=> {
+      this.closeSub.unsubscribe();
+      viewContainerRef.clear();
+    });
+
+  }
+
+  ngONDestroy(): void {
+    if(this.closeSub) {
+      this.closeSub.unsubscribe();
+      // https://angular.io/guide/dynamic-component-loader
+    }
   }
 }

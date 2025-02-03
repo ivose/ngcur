@@ -1,0 +1,13 @@
+<h1>Signals</h1>
+<div id="counter">
+    <p id="counter-output">Counter: {{ counter() }}</p>
+    <div id="counter-btns">
+        <button (clic)="decrement()">Decrement</button>
+        <button (clic)="increment()">Increment</button>
+    </div>
+</div>
+
+<h2>Action log</h2>
+<ol id="log">
+    <li *ngFor="let action of actions">{{action}}</li>
+</ol>

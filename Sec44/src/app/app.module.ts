@@ -19,3 +19,10 @@ import { UserComponent } from './user/user.component';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+/*
+https://angular.io/docs/ts/latest/guide/testing.html
+https://semaphoreci.com/community/tutorials/testing-components-in-angular-2-with-jasmine
+https://github.com/angular/angular-cli/wiki/test
+https://github.com/angular/angular-cli/wiki/e2e
+*/
